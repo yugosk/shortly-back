@@ -15,3 +15,11 @@ export async function create(user) {
     [name, email, password, confirmPassword]
   );
 }
+
+export async function createSession(session) {
+  const { userId, token } = session;
+  await connection.query(
+    `INSERT INTO sessions ("userId", token) VALUES ($1, $2)`,
+    [userId, token]
+  );
+}
