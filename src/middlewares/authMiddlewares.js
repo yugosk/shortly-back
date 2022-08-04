@@ -2,25 +2,12 @@ import { signUpSchema, signInSchema } from "../schemas/authSchema.js";
 import { readByEmail } from "../repositories/authRepository.js";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
+import jwt from "jsonwebtoken";
 
 dotenv.config();
 
-export async function validateSignUpSchema(req, res, next) {
-  const newUser = req.body;
-  const { error } = signUpSchema.validate(newUser, { abortEarly: false });
-  if (error) {
-    return res.status(422).send(
-      error.details.map((error) => {
-        return error.message;
-      })
-    );
-  }
-  res.locals.user = newUser;
-  next();
-}
-
 export async function checkEmail(req, res, next) {
-  const { email } = res.locals.user;
+  const { email } = req.body;
 
   const emailCheck = await readByEmail(email);
   if (emailCheck.length !== 0) {
@@ -30,25 +17,8 @@ export async function checkEmail(req, res, next) {
   next();
 }
 
-export async function validateSignInSchema(req, res, next) {
-  const userCredentials = req.body;
-  const { error } = signInSchema.validate(userCredentials, {
-    abortEarly: false,
-  });
-  if (error) {
-    return res.status(422).send(
-      error.details.map((error) => {
-        return error.message;
-      })
-    );
-  }
-  res.locals.credentials = userCredentials;
-  next();
-}
-
 export async function checkCredentials(req, res, next) {
-  const userCredentials = res.locals.credentials;
-  const { email, password } = userCredentials;
+  const { email, password } = req.body;
 
   const dbCredentials = await readByEmail(email);
   if (dbCredentials.length === 0) {
@@ -59,6 +29,24 @@ export async function checkCredentials(req, res, next) {
     return res.status(401).send("A senha digitada está incorreta");
   }
 
-  res.locals.userId = dbCredentials[0].id;
+  res.locals.tokenContent = {
+    id: dbCredentials[0].id,
+    email: dbCredentials[0].email,
+  };
+
   next();
+}
+
+export async function validateToken(req, res, next) {
+  const { authorization } = req.headers;
+  const token = authorization?.replace("Bearer", "").trim();
+  const key = process.env.JWT_KEY;
+
+  try {
+    const userData = jwt.verify(token, key);
+    res.locals.userData = userData;
+    next();
+  } catch {
+    res.status(401).send("Token inválido");
+  }
 }

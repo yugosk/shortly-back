@@ -1,11 +1,11 @@
 import { create, createSession } from "../repositories/authRepository.js";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
-import { v4 as uuid } from "uuid";
+import jwt from "jsonwebtoken";
 dotenv.config();
 
 export async function postSignUp(req, res) {
-  const newUser = res.locals.user;
+  const newUser = req.body;
   const { name, email, password, confirmPassword } = newUser;
   const hashUser = {
     name,
@@ -22,14 +22,11 @@ export async function postSignUp(req, res) {
 }
 
 export async function signIn(req, res) {
-  const userId = res.locals.userId;
-  const token = uuid();
-  const session = {
-    userId,
-    token,
-  };
+  const tokenContent = res.locals.tokenContent;
+  const key = process.env.JWT_KEY;
+  const token = jwt.sign(tokenContent, key);
+
   try {
-    await createSession(session);
     res.status(200).send(token);
   } catch {
     res.sendStatus(500);

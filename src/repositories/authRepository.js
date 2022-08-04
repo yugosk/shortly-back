@@ -2,7 +2,7 @@ import connection from "../databaseStrategy/postgre.js";
 
 export async function readByEmail(email) {
   const { rows: response } = await connection.query(
-    `SELECT * FROM users WHERE email = $1`,
+    `SELECT id, email, password FROM users WHERE email = $1`,
     [email]
   );
   return response;
