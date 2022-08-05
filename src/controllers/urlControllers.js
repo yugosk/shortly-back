@@ -1,4 +1,9 @@
-import { create, readById } from "../repositories/urlRepository.js";
+import {
+  create,
+  readById,
+  readByShortUrl,
+  updateVisitCount,
+} from "../repositories/urlRepository.js";
 import { nanoid } from "nanoid";
 
 export async function postUrl(req, res) {
@@ -22,4 +27,15 @@ export async function getUrl(req, res) {
   }
 
   res.status(200).send(response[0]);
+}
+
+export async function redirect(req, res) {
+  const { shortUrl } = req.params;
+  const url = await readByShortUrl(shortUrl);
+  if (url.length === 0) {
+    return res.status(404).send("A URL encurtada não existe");
+  }
+
+  await updateVisitCount(shortUrl);
+  res.redirect(url[0].url);
 }

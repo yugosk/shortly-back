@@ -20,3 +20,22 @@ export async function readById(id) {
   );
   return response;
 }
+
+export async function readByShortUrl(url) {
+  const { rows: response } = await connection.query(
+    `
+    SELECT url FROM urls WHERE "shortUrl" = $1
+    `,
+    [url]
+  );
+  return response;
+}
+
+export async function updateVisitCount(url) {
+  await connection.query(
+    `
+    UPDATE urls SET "visitCount" = "visitCount" + 1 WHERE "shortUrl" = $1
+    `,
+    [url]
+  );
+}

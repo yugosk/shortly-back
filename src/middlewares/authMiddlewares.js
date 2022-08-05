@@ -1,4 +1,3 @@
-import { signUpSchema, signInSchema } from "../schemas/authSchema.js";
 import { readByEmail } from "../repositories/authRepository.js";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
