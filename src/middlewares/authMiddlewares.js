@@ -30,7 +30,7 @@ export async function checkCredentials(req, res, next) {
   }
 
   res.locals.tokenContent = {
-    id: dbCredentials[0].id,
+    userId: dbCredentials[0].id,
     email: dbCredentials[0].email,
   };
 
