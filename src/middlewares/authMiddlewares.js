@@ -21,12 +21,13 @@ export async function checkCredentials(req, res, next) {
   const { email, password } = req.body;
 
   const dbCredentials = await readByEmail(email);
-  if (dbCredentials.length === 0) {
-    return res.status(401).send("O email não foi encontrado");
-  }
-
-  if (!bcrypt.compareSync(password, dbCredentials[0].password)) {
-    return res.status(401).send("A senha digitada está incorreta");
+  if (
+    dbCredentials.length === 0 ||
+    !bcrypt.compareSync(password, dbCredentials[0].password)
+  ) {
+    return res
+      .status(401)
+      .send("O email não foi encontrado ou a senha digitada está incorreta");
   }
 
   res.locals.tokenContent = {
