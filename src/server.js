@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import authRouter from "./routers/authRouter.js";
 import urlRouter from "./routers/urlRouter.js";
 import userRouter from "./routers/userRouter.js";
+import rankingRouter from "./routers/rankingRouter.js";
 
 const server = express();
 dotenv.config();
@@ -14,6 +15,7 @@ server.use(express.json());
 server.use(authRouter);
 server.use(urlRouter);
 server.use(userRouter);
+server.use(rankingRouter);
 
 const PORT = process.env.PORT;
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
