@@ -3,6 +3,7 @@ import {
   readById,
   readByShortUrl,
   updateVisitCount,
+  deleteById,
 } from "../repositories/urlRepository.js";
 import { nanoid } from "nanoid";
 
@@ -38,4 +39,14 @@ export async function redirect(req, res) {
 
   await updateVisitCount(shortUrl);
   res.redirect(url[0].url);
+}
+
+export async function deleteUrl(req, res) {
+  const { id } = req.params;
+  try {
+    await deleteById(id);
+    res.status(204).send("A URL foi excluída com sucesso");
+  } catch {
+    res.sendStatus(500);
+  }
 }

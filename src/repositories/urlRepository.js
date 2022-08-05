@@ -39,3 +39,22 @@ export async function updateVisitCount(url) {
     [url]
   );
 }
+
+export async function readIdAndUserId(id, userId) {
+  const { rows: response } = await connection.query(
+    `
+    SELECT * FROM urls WHERE id = $1 AND "userId" = $2
+    `,
+    [id, userId]
+  );
+  return response;
+}
+
+export async function deleteById(id) {
+  await connection.query(
+    `
+    DELETE FROM urls WHERE id = $1
+    `,
+    [id]
+  );
+}
